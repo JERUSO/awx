@@ -1,0 +1,9 @@
+---
+- name: este es un ejemplo de tarea
+  hosts: localhost
+  become: no
+  tasks:
+    - name: instalar vim
+      yum:
+        name: vim
+        state: latest
