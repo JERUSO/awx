@@ -1,8 +1,8 @@
 from bs4 import BeautifulSoup as bs
 import requests
 
-DOMAIN= "https://www.sbs.gob.pe"
-URL= "https://intranet2.sbs.gob.pe/estadistica/financiera/2021/Febrero/"
+DOMAIN = "https://www.sbs.gob.pe"
+URL = "https://intranet2.sbs.gob.pe/estadistica/financiera/2021/Febrero/"
 FILETYPE ='.XLS'
 
 def get_soup(url):
