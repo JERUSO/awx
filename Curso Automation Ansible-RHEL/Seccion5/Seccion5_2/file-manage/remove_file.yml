@@ -1,0 +1,9 @@
+---
+- name: eliminando archivos desde el modulo file
+  hosts: all
+  remote_user: devops
+  tasks:
+    - name: eliminando el archivo en los hosts administrados
+      file:
+        path: /home/devops/users.txt
+        state: absent

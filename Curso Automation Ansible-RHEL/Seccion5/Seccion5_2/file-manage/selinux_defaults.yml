@@ -1,0 +1,12 @@
+---
+- name: Usando el modulo file para asegurar el contexto del SElinux
+  hosts: all
+  remote_user: root
+  tasks:
+    - name: SELinux file context is set to defaults
+      file:
+        path: /home/devops/users.txt
+        seuser: _default
+        serole: _default
+        setype: _default
+        selevel: _default

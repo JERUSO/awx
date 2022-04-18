@@ -1,0 +1,12 @@
+---
+- name: adicionando bloque de texto a archivo
+  hosts: all
+  remote_user: root
+  tasks:
+    - name: adicionando el bloque de texto en el archivo user.txt
+      blockinfile:
+        path: /home/devops/users.txt
+        block: |
+          Este bloque de texto consiste en dos lineas.
+          Estas tienen que ser adicionadas con el modulo blockinfile
+        state: present
