@@ -1,0 +1,16 @@
+---
+- name: test esxi
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Gather all registered virtual machines
+      vmware_vm_info:
+        hostname: 192.168.0.20
+        username: root
+        password: Mn3PyM48
+        validate_certs: false
+      # delegate to:
+      registered: vminfo
+
+    - debug:
+        var: vminfo.virtual_machines
