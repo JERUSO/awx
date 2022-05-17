@@ -1,6 +1,6 @@
 ---
 - name: deploy vsftpd
-  hosts: rheljh02
+  hosts: localhost
   tasks:
   - name: install vsftpd
     yum: name=vsftpd
