@@ -2,16 +2,16 @@
 - name: test esxi
   hosts: localhost
   gather_facts: false
-  vars:
-    - vcenter_hostname: vcenter67.finansis.local
+  #vars:
+  #  - vcenter_hostname: vcenter67.finansis.local
   #  - vcenter_username: administrator@vsphere.local
   #  - vcenter_password: Mn3PyM48$$
   tasks:
     - name: Gather all registered virtual machine
       vmware_vm_info:
-        hostname: '{{ vcenter_hostname }}'
-        username: '{{ vcenter_username }}'
-        password: '{{ vcenter_password }}'
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
         validate_certs: false
       delegate_to: localhost
       register: vminfo
