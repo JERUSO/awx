@@ -4,8 +4,8 @@
   gather_facts: false
   vars:
     - vcenter_hostname: vcenter67.finansis.local
-    - vcenter_username: administrator@vsphere.local
-    - vcenter_password: Mn3PyM48$$
+  #  - vcenter_username: administrator@vsphere.local
+  #  - vcenter_password: Mn3PyM48$$
   tasks:
     - name: Gather all registered virtual machine
       vmware_vm_info:
