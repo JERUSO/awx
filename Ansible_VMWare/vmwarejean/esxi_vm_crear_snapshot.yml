@@ -3,7 +3,7 @@
 # Calling main role of the project
 
 - name: vmware
-  hosts: localhost
+  hosts: "{{ jh_server }}"
   gather_facts: false
   vars:
     - ansible_python_interpreter: python3
