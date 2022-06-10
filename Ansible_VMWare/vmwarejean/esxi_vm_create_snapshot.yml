@@ -70,7 +70,3 @@
         - name: use debug
           debug:
             var: facts
-      recue:
-        - name: " Rescue: Errors in the play "
-          debug:
-            msg: " There are some errors in the play in the pre req steps before snapshot. Please reach out to Support team for the same. "
