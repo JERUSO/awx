@@ -28,11 +28,13 @@
       register: ds_info
       no_log: true
 
-    - name: debug exist disk
+    - name: Set fact to a list
+      set_fact:
+        datastore_list: "{{ ds_info.results | map(attribute='datastores') | list | flatten }}"
+    - name: Display capacity details for the given virtual machines
       debug:
-        var:
-          - existing_disk
-          - ds_info
+        msg: "{{ item.name }} datastore total capacity is {{ item.capacity }} and free space is {{ item.freeSpace }}"
+      loop: "{{ datastore_list }}"
 
     - name: create "{{ vm_name }}" snapshot
       vmware_guest_snapshot:
