@@ -1,0 +1,23 @@
+---
+- name: Obtener informacion de todos los datacenters
+  hosts: localhost
+  gather_facts: False
+  vars:
+    ansible_python_interpreter: "/usr/bin/env python3"
+  tasks:
+    - name: Get datastore_url from given VM name
+      block:
+        - name: Get virtual machine info
+          community.vmware.vmware_vm_info:
+            hostname: "{{ vcenter_hostname }}"
+            username: "{{ vcenter_username }}"
+            password: "{{ vcenter_password }}"
+            validate_certs: False
+          delegate_to: localhost
+          register: vm_info
+        - debug:
+            msg: "{{ item.datastore_url }}"
+          #with_items:
+          #  - "{{ vm_info.virtual_machines | community.general.json_query(query) }}"
+          #vars:
+          #  query: "[?guest_name=='w2k3cl01']"
