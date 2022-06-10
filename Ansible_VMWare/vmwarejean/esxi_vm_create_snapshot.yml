@@ -26,7 +26,7 @@
         name: "{{ item.value.backing_datastore }}"
       with_dict: "{{ existing_disk.guest_disk_info }}"
       register: ds_info
-      no_log: true
+      #no_log: true
 
     - name: Set fact to a list
       set_fact:
