@@ -2,6 +2,8 @@
 - name: creacion de snapshot para VM - VMWARE
   hosts: localhost
   gather_facts: no
+  vars:
+    datacenter: JEAN
   tasks:
     - name: create "{{ vm_name }}" snapshot
       vmware_guest_snapshot:
