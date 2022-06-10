@@ -31,9 +31,16 @@
     - name: Set fact to a list
       set_fact:
         datastore_list: "{{ ds_info.results | map(attribute='datastores') | list | flatten }}"
+
     - name: Display capacity details for the given virtual machines
       debug:
         msg: "{{ item.name }} datastore total capacity is {{ item.capacity }} and free space is {{ item.freeSpace }}"
+      loop: "{{ datastore_list }}"
+
+    - name: Set a fact to the free space percentage
+      set_fact:
+        free_space_available: " {% if item.freeSpace | int / item.capacity | int * 100  >= 10 %}true{%else%}false{%endif%}"
+        free_space_not_available: " {% if item.freeSpace | int / item.capacity | int * 100 < 10 %}true{%else%}false{%endif%}"
       loop: "{{ datastore_list }}"
 
     - name: create "{{ vm_name }}" snapshot
