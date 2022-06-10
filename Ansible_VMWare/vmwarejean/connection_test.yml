@@ -1,0 +1,70 @@
+---
+# @author: Nelson Rodrigues Ferreira Junior <nelsonrf@kyndryl.com>
+# @copyright: (c) Kyndryl Inc. 2021. All Rights Reserved.
+# @name: GEN_Connectivity_Test.yml
+# @base_version: 2.7
+# @description: Check Connectivity Test.
+#
+# @dependencies: Requires Sudo: () Yes (x) No
+# @dependencies: Requires Ansible Pre-Reqs: () Yes (x) No
+
+- name: Connectivity Test
+  hosts: '{{ affected_host }}'
+  roles: ['ansible_role_ssh_tunnel']
+  strategy: host_pinned
+  gather_facts: false
+  ignore_unreachable: true
+  vars:
+    platform_supported: ['aix', 'as400', 'freebsd', 'hpux', 'linux', 'solaris', 'vios', 'windows']
+
+  pre_tasks:
+    - name: Initialize JSON Data for ELK
+      include_role:
+        name: elastic_post_data
+        tasks_from: initialize_upsert
+      vars:
+        elk_uri: '{{ vars.kibana.index_prefix }}reachable'
+      when: hostvars[inventory_hostname].os in platform_supported
+
+  tasks:
+    - block:
+        # This role uses the variable "script_output" to store the result.
+        - name: Check Server Connectivity
+          include_role:
+            name: script_runner
+          vars:
+            script_name: 'library/utils/connectivity_test.{{ ["sh","ps1"][hostvars[inventory_hostname].os == "windows"] }}'
+
+        - name: Update JSON data
+          set_fact:
+            elastic_doc: >-
+              {%- set data = { 'unreachable': unreachable } -%}
+              {%- if elastic_doc.status == 'Unreachable' and not unreachable -%}
+                {%- set ignored = data.update({ 'status': 'OK' }) -%}
+              {%- else -%}
+                {%- set msg = [] -%}
+                {%- for item in ['msg', 'module_stderr', 'module_stdout', 'stderr', 'exception', 'stdout'] -%}
+                  {%- if item in script_output and script_output[item] is defined and script_output[item] -%}
+                    {%- set ignored = msg.append(script_output[item]) -%}
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- set ignored = data.update({ 'msg': '\n'.join(msg) | trim }) -%}
+              {%- endif -%}
+              {{ elastic_doc | combine(data) }}
+          vars:
+            unreachable: '{{ script_output.unreachable is defined and script_output.unreachable }}'
+          # no_log: yes
+          delegate_to: 127.0.0.1
+
+      when: hostvars[inventory_hostname].os in platform_supported
+
+  post_tasks:
+    - name: Send JSON Data to ELK Stack
+      include_role:
+        name: elastic_post_data
+      when: hostvars[inventory_hostname].os in platform_supported
+
+    - include_role:
+        name: component_output
+        tasks_from: bulk
+      when: inventory_hostname == ansible_play_hosts[-1]

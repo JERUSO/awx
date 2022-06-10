@@ -6,6 +6,19 @@
     datacenter: JEAN
     ansible_playbook_interpreter: "/usr/bin/env python3"
   tasks:
+    - name: Collecting disk information for given virtual machine from vCenter {{ vcenter_hostname }}
+      vmware_guest_disk_info:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        datacenter: "{{ datacenter }}"
+        validate_certs: false
+        name: "{{ vm_name }}"
+      register: existing_disk
+    - name: debug exist disk
+      debug:
+        var: existing_disk
+
     - name: create "{{ vm_name }}" snapshot
       vmware_guest_snapshot:
         hostname: "{{ vcenter_hostname }}"
