@@ -1,0 +1,9 @@
+---
+datacenter: JEAN
+esxi_server: 192.168.0.20
+esxi_user: root
+esxi_pass: Mn3PyM48
+vm_name:
+  - w2k3cl01
+
+  

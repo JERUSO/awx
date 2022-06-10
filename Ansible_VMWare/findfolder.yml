@@ -1,0 +1,23 @@
+---
+- name: Find folder path of an existing virtual machine
+  hosts: localhost
+  gather_facts: False
+  vars_files:
+    - esxi_vars.yml
+  vars:
+    ansible_python_interpreter: "/usr/bin/env python3"
+  tasks:
+    - set_fact:
+        vm_name: "w2k3cl02"
+
+    - name: "Find folder for VM - {{ vm_name }}"
+      vmware_guest_find:
+        hostname: "{{ esxi_server }}"
+        username: "{{ esxi_user }}"
+        password: "{{ esxi_pass }}"
+        validate_certs: False
+        name: "{{ vm_name }}"
+      delegate_to: localhost
+      register: vm_facts
+    - debug:
+        var: vm_facts

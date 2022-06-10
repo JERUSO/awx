@@ -1,0 +1,21 @@
+---
+- name: power on  esxi guest host
+  hosts: localhost
+  gather_facts: yes
+  tasks:
+    - name: Set the state of a virtual machine to poweroff
+      vmware_guest_powerstate:
+        hostname: 192.168.0.20
+        username: root 
+        password: Mn3PyM48 
+        validate_certs: no
+        folder: /JEAN/vm 
+        name: ubuntu18.04 
+        state: powered-on
+      delegate_to: localhost
+      register: deploy
+
+    - name: use debug
+      debug:
+        var: deploy
+

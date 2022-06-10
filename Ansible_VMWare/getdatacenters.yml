@@ -1,0 +1,15 @@
+---
+- name: Obtener informacion de todos los datacenters
+  hosts: localhost
+  gather_facts: False
+  vars_files:
+    - esxi_vars.yml
+  vars:
+    ansible_python_interpreter: "/usr/bin/env python3"
+  tasks:
+    - name: Gather information about all datacenters
+      vcommunity.vmware.vmware_datacenter_info:
+        hostname: '{{ esxi_server }}'
+        username: '{{ esxi_user }}'
+        password: '{{ esxi_pass }}'
+      delegate_to: localhost
