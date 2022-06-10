@@ -19,3 +19,20 @@
     - name: Display the first interface set IP Address of a virtual machine
       debug:
         msg: "{{ gather_vm_info }}"
+
+    - name: Set device_config_ids variable
+      set_fact:
+        device_config_ids: >-
+         {{ device_config_ids | default([])
+           + [item.deviceConfigId]
+          }}
+      loop: "{{ gather_vm_info.instance.guest.net }}"
+
+    - name: Display the first interface set IP Address of a virtual machine
+      debug:
+        msg: "{{ item.1.ipAddress.0 }}"
+      with_nested:
+        - "{{ device_config_ids | sort | first }}"
+        - "{{ gather_vm_info.instance.guest.net }}"
+      when:
+        - item.0 | int == item.1.deviceConfigId
