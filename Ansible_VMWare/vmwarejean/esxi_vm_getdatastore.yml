@@ -8,7 +8,7 @@
     - name: Get datastore_url from given VM name
       block:
         - name: Get virtual machine info
-          community.vmware.vmware_vm_info:
+          vmware_vm_info:
             hostname: "{{ vcenter_hostname }}"
             username: "{{ vcenter_username }}"
             password: "{{ vcenter_password }}"
