@@ -15,7 +15,8 @@
         name: "{{ vm_name }}"
         schema: "vsphere"
         validate_certs: False
-        properties: ["config.hardware.memoryMB", "config.hardware.numCPU", "config.hardware.numCoresPerSocket", "config.datastoreUrl.name","confir.datastoreUrl.url","guest.disk", "config.files.vmPathName","guest.ipStack.hostName","guest.ipStack.ipAddress","guest.summary"]
+        #properties: ["config.hardware.memoryMB", "config.hardware.numCPU", "config.hardware.numCoresPerSocket", "config.datastoreUrl.name","confir.datastoreUrl.url","guest.disk", "config.files.vmPathName","guest.ipStack.hostName","guest.ipStack.ipAddress","guest.summary"]
+        properties: ["guest.summary"]
       delegate_to: localhost
       register: info
     - debug:
