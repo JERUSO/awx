@@ -1,0 +1,27 @@
+---
+- name: delete esxi vm snapshot
+  hosts: localhost
+  gather_facts: no
+  vars:
+    datacenter: JEAN
+    ansible_playbook_interpreter: "/usr/bin/env python3"
+  tasks:
+    - name: delete "{{ vm_name }}" snapshot
+      vmware_guest_snapshot:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        datacenter: "{{ datacenter }}"
+        folder: "/{{ datacenter }}/vm/"
+        name: "{{ vm_name }}"
+        state: remove_all
+        snapshot_name: "{{ vm_name }}"
+        description: "{{ vm_name }}_snapshot"
+        validate_certs: False
+      #loop: "{{ vm_name }}"
+      delegate_to: localhost
+      register: facts
+
+    - name: use debug
+      debug:
+        var: facts
