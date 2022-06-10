@@ -6,48 +6,42 @@
     datacenter: JEAN
     ansible_playbook_interpreter: "/usr/bin/env python3"
   tasks:
-    - name: validacion de capacidad de datastore
-      block:
-        - name: Collecting disk information for given virtual machine from vCenter {{ vcenter_hostname }}
-          vmware_guest_disk_info:
-            hostname: "{{ vcenter_hostname }}"
-            username: "{{ vcenter_username }}"
-            password: "{{ vcenter_password }}"
-            datacenter: "{{ datacenter }}"
-            validate_certs: false
-            name: "{{ vm_name }}"
-          register: existing_disk
+    - name: Collecting disk information for given virtual machine from vCenter {{ vcenter_hostname }}
+      vmware_guest_disk_info:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        datacenter: "{{ datacenter }}"
+        validate_certs: false
+        name: "{{ vm_name }}"
+      register: existing_disk
 
-        - name: " Gather information from datacenter about specific datastore "
-          vmware_datastore_info:
-            hostname: "{{ vcenter_hostname }}"
-            username: "{{ vcenter_username }}"
-            password: "{{ vcenter_password }}"
-            validate_certs: false
-            datacenter: "{{ datacenter }}"
-            name: "{{ item.value.backing_datastore }}"
-          with_dict: "{{ existing_disk.guest_disk_info }}"
-          register: ds_info
-          #no_log: true
+    - name: " Gather information from datacenter about specific datastore "
+      vmware_datastore_info:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        validate_certs: false
+        datacenter: "{{ datacenter }}"
+        name: "{{ item.value.backing_datastore }}"
+      with_dict: "{{ existing_disk.guest_disk_info }}"
+      register: ds_info
+      #no_log: true
 
-        - name: Set fact to a list
-          set_fact:
-            datastore_list: "{{ ds_info.results | map(attribute='datastores') | list | flatten }}"
+    - name: Set fact to a list
+      set_fact:
+        datastore_list: "{{ ds_info.results | map(attribute='datastores') | list | flatten }}"
 
-        - name: Display capacity details for the given virtual machines
-          debug:
-            msg: "{{ item.name }} datastore total capacity is {{ item.capacity }} and free space is {{ item.freeSpace }}"
-          loop: "{{ datastore_list }}"
+    - name: Display capacity details for the given virtual machines
+      debug:
+        msg: "{{ item.name }} datastore total capacity is {{ item.capacity }} and free space is {{ item.freeSpace }}"
+      loop: "{{ datastore_list }}"
 
-        - name: Set a fact to the free space percentage
-          set_fact:
-            free_space_available: " {% if item.freeSpace | int / item.capacity | int * 100  >= 10 %}true{%else%}false{%endif%}"
-            free_space_not_available: " {% if item.freeSpace | int / item.capacity | int * 100 < 10 %}true{%else%}false{%endif%}"
-          loop: "{{ datastore_list }}"
-      recue:
-        - name: " Rescue: Errors in the play "
-          debug:
-            msg: " There are some errors in the play in the pre req steps before snapshot. Please reach out to Support team for the same. "
+    - name: Set a fact to the free space percentage
+      set_fact:
+        free_space_available: " {% if item.freeSpace | int / item.capacity | int * 100  >= 10 %}true{%else%}false{%endif%}"
+        free_space_not_available: " {% if item.freeSpace | int / item.capacity | int * 100 < 10 %}true{%else%}false{%endif%}"
+      loop: "{{ datastore_list }}"
 
     - name: bloque para la creacion del snapahot
       block:
