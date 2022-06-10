@@ -18,10 +18,4 @@
 
     - name: Display the first interface set IP Address of a virtual machine
       debug:
-        msg: >-
-          {{ gather_vm_info.instance.hw_eth0.ipaddresses
-            | map('ipaddr', 'ipv4')
-            | select('!=', false)
-            | list
-            | first
-          }}
+        msg: "{{ gather_vm_info }}"
