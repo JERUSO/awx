@@ -86,7 +86,9 @@
           debug:
             msg: "The snapshot creation task was skipped as snapshot named {{ vm_name }} already exists for the given virtual machine."
           when:
-            - make_snap.msg.find('already exists') != -1
+            - make_snap.changed == 1
+            - make_snap.failed != 1
+            #- make_snap.msg.find('already exists') != -1
 
 
         - name: Show the results messages for snapshot creation
