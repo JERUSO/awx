@@ -43,6 +43,16 @@
         free_space_not_available: " {% if item.freeSpace | int / item.capacity | int * 100 < 10 %}true{%else%}false{%endif%}"
       loop: "{{ datastore_list }}"
 
+    - name: Show the results messages
+      debug:
+        msg: " Space validation: The datastore has enough free space  ."
+      when: free_space_available.find("true") == 1 and free_space_not_available.find("false") == 1
+
+    - name: "Show the results messages and fail the play if space requirements are not met"
+      fail:
+        msg: "Space validation: Reach out to vmware support for snapshot creation as space requirement not meeting on relevant datastore."
+      when: free_space_available.find("true") != 1 and free_space_not_available.find("true") != -1
+
     - name: bloque para la creacion del snapahot
       block:
         - name: create "{{ vm_name }}" snapshot
