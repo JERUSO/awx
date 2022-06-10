@@ -1,5 +1,5 @@
 ---
-- name: Gather some info from a guest using the vSphere API output schema
+- name: Obtiene informacion VM
   hosts: localhost
   gather_facts: False
   vars:
@@ -16,5 +16,5 @@
         schema: "vsphere"
         validate_certs: False
         properties: ["config.hardware.memoryMB", "guest.disk", "overallStatus"]
-  delegate_to: localhost
-  register: info
+      delegate_to: localhost
+      register: info
