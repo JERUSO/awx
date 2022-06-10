@@ -18,3 +18,5 @@
         properties: ["config.hardware.memoryMB", "guest.disk", "overallStatus"]
       delegate_to: localhost
       register: info
+    - debug:
+            msg: "{{ info }}"
