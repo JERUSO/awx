@@ -1,0 +1,133 @@
+---
+# vm-snapshot-create role created by mohit manchanda
+
+
+- block: 
+  
+  - name: " Collecting disk information for given virtual machine from vCenter {{ vcenter_hostname }} "
+    vmware_guest_disk_info:
+      hostname: "{{ vcenter_hostname }}"
+      username: "{{ vcenter_user }}"
+      password: "{{ vcenter_pass }}"
+      validate_certs: false
+      datacenter: "{{ datacenter_name }}"
+      name: "{{ vm_name }}"
+    register: existing_disk
+    
+#  - name: Get Backing datastore list and print values
+#    debug:
+#      msg: "{{ item.value.backing_datastore }}"
+#    with_dict: "{{ existing_disk.guest_disk_info }}"
+      
+      
+  - name: " Gather information from datacenter about specific datastore "
+    vmware_datastore_info:
+      hostname: "{{ vcenter_hostname }}"
+      username: "{{ vcenter_user }}"
+      password: "{{ vcenter_pass }}"
+      validate_certs: false
+      datacenter: "{{ datacenter_name }}"
+      name: "{{ item.value.backing_datastore }}"
+    with_dict: "{{ existing_disk.guest_disk_info }}"
+    register: ds_info
+    no_log: true
+   
+#  - name: print var ds_info output
+#    debug:
+#      var: ds_info
+      
+  - name: Set fact to a list
+    set_fact:
+      datastore_list: "{{ ds_info.results | map(attribute='datastores') | list | flatten }}"
+      
+#  - debug: var=datastore_list   
+      
+  - name: Display capacity details for the given virtual machines
+    debug:
+      msg: "{{ item.name }} datastore total capacity is {{ item.capacity }} and free space is {{ item.freeSpace }}"
+    loop: "{{ datastore_list }}"     
+     
+ # arthematic set fact -yes -no 
+ # sanpshot #yes !=no      
+      
+  - name: Set a fact to the free space percentage
+    set_fact:
+      free_space_available: " {% if item.freeSpace | int / item.capacity | int * 100  >= 10 %}true{%else%}false{%endif%}"
+      free_space_not_available: " {% if item.freeSpace | int / item.capacity | int * 100 < 10 %}true{%else%}false{%endif%}"
+    loop: "{{ datastore_list }}"
+      
+#  - name: "Display vm space details"
+#    debug:
+#      msg: " free_space_available = {{ free_space_available }} , free_space_not_available = {{ free_space_not_available }}"
+              
+       
+  - name: Show the results messages
+    debug:
+      msg: " Space validation: The datastore has enough free space  ."
+    when: free_space_available.find("true") == 1 and free_space_not_available.find("false") == 1
+
+  - name: "Show the results messages and fail the play if space requirements are not met"
+    fail:
+      msg: "Space validation: Reach out to vmware support for snapshot creation as space requirement not meeting on relevant datastore."
+    when: free_space_available.find("true") != 1 and free_space_not_available.find("true") != -1
+
+    
+  rescue:
+  - name: " Rescue: Errors in the play "
+    debug:
+      msg: " There are some errors in the play in the pre req steps before snapshot. Please reach out to Support team for the same. "
+
+
+      
+- name: snapshot block
+  block:
+    - name: Create snapshot of a VM as per provided inputs via variable
+      vmware_guest_snapshot:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_user }}"
+        password: "{{ vcenter_pass }}"
+        validate_certs: false
+        folder: "/{{ datacenter_name }}/vm/"
+        name: "{{ vm_name }}"
+        state: present
+        datacenter: "{{ datacenter_name }}"
+        snapshot_name: "{{ snap_name }}"
+        description: "{{ snap_desc }}"
+        quiesce: "{{ snap_quiesce | default(false) }}"
+        memory_dump: "{{ snap_memory_dump | default(false) }}"
+      register: make_snap
+      when: free_space_available.find("true") == 1 and free_space_not_available.find("false") == 1
+          
+
+# msg - success for snapshot | or| reach out to Vmware support group
+
+    - debug: var=make_snap
+
+
+    - name: Show the results messages for snapshot creation
+      debug:
+        msg: "The snapshot creation task was successful."
+      when: 
+        - make_snap.failed != 1
+        - make_snap.snapshot_results.snapshots is defined
+
+    - name: Show the results messages for snapshot creation
+      debug:
+        msg: "The snapshot creation task was skipped as snapshot named {{ snap_name }} already exists for the given virtual machine."
+      when:
+        - make_snap.msg.find('already exists') != -1
+
+          
+    - name: Show the results messages for snapshot creation
+      debug:
+        msg: " snapshot creation faied. Please Reach out the VMware support group."
+      when: 
+        - make_snap.changed != 1
+        - make_snap.failed == 1  
+ 
+  rescue:
+    - name: "Rescue: Show the results messages for snapshot creation"
+      debug:
+        msg: " snapshot creation process got some errors. Please Reach out the VMware support group to investigate."       
+    
+ 

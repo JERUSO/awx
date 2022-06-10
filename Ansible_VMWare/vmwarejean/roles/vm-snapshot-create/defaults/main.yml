@@ -1,0 +1,5 @@
+---
+#vm-snapshot-create role created by mohit manchanda
+ansible_python_interpreter: python3
+jh_server: vm000003788.boi.ibmuk.bluecare.ibm.com
+vmware_validate_certs: false

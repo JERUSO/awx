@@ -1,0 +1,11 @@
+---
+          
+# Calling main role of the project
+
+- name: vmware
+  hosts: "{{ jh_server }}"
+  gather_facts: false
+  vars:
+    - ansible_python_interpreter: python3    
+  roles:
+  - role: vm-snapshot-create
