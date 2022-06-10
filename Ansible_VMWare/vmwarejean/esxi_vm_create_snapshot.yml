@@ -55,22 +55,43 @@
 
     - name: bloque para la creacion del snapahot
       block:
-        - name: create "{{ vm_name }}" snapshot
+        - name: Create snapshot of a VM as per provided inputs via variable
           vmware_guest_snapshot:
             hostname: "{{ vcenter_hostname }}"
             username: "{{ vcenter_username }}"
             password: "{{ vcenter_password }}"
-            datacenter: "{{ datacenter }}"
+            validate_certs: false
             folder: "/{{ datacenter }}/vm/"
             name: "{{ vm_name }}"
             state: present
+            datacenter: "{{ datacenter }}"
             snapshot_name: "{{ vm_name }}"
             description: "{{ vm_name }}_snapshot"
-            validate_certs: False
-          #loop: "{{ vm_name }}"
-          delegate_to: localhost
-          register: facts
+            quiesce: "{{ snap_quiesce | default(false) }}"
+            memory_dump: "{{ snap_memory_dump | default(false) }}"
+          register: make_snap
+          when: free_space_available.find("true") == 1 and free_space_not_available.find("false") == 1
 
-        - name: use debug
+        - debug: var=make_snap
+
+
+        - name: Show the results messages for snapshot creation
           debug:
-            var: facts
+            msg: "The snapshot creation task was successful."
+          when:
+            - make_snap.failed != 1
+            - make_snap.snapshot_results.snapshots is defined
+
+        - name: Show the results messages for snapshot creation
+          debug:
+            msg: "The snapshot creation task was skipped as snapshot named {{ snap_name }} already exists for the given virtual machine."
+          when:
+            - make_snap.msg.find('already exists') != -1
+
+
+        - name: Show the results messages for snapshot creation
+          debug:
+            msg: " snapshot creation faied. Please Reach out the VMware support group."
+          when:
+            - make_snap.changed != 1
+            - make_snap.failed == 1
