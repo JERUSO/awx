@@ -3,4 +3,4 @@
 ansible_python_interpreter: python3
 vmware_validate_certs: false
 datacenter_name: JEAN
-jh_server: Jenkins01
+#jh_server: Jenkins01
