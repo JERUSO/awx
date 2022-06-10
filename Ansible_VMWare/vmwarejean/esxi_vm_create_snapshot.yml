@@ -4,6 +4,7 @@
   gather_facts: no
   vars:
     datacenter: JEAN
+    ansible_playbook_interpreter: "/usr/bin/env python3"
   tasks:
     - name: create "{{ vm_name }}" snapshot
       vmware_guest_snapshot:
