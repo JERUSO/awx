@@ -1,0 +1,20 @@
+---
+- name: Gather some info from a guest using the vSphere API output schema
+  hosts: localhost
+  gather_facts: False
+  vars:
+    datacenter: JEAN
+    ansible_python_interpreter: "/usr/bin/env python3"
+  tasks:
+    - name: Gather some info from a guest using the vSphere API output schema
+      vmware_guest_info:
+        hostname: "{{ vcenter_hostname }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
+        datacenter: "{{ datacenter_name }}"
+        name: "{{ vm_name }}"
+        schema: "vsphere"
+        validate_certs: False
+        properties: ["config.hardware.memoryMB", "guest.disk", "overallStatus"]
+  delegate_to: localhost
+  register: info
