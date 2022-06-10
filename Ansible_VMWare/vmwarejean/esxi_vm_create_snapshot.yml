@@ -13,12 +13,12 @@
         password: "{{ vcenter_password }}"
         datacenter: "{{ datacenter }}"
         folder: "/{{ datacenter }}/vm/"
-        name: "{{ item }}"
+        name: "{{ vm_name }}"
         state: present
-        snapshot_name: "{{ item }}"
-        description: "{{ item }}_snapshot"
+        snapshot_name: "{{ vm_name }}"
+        description: "{{ vm_name }}_snapshot"
         validate_certs: False
-      loop: "{{ vm_name }}"
+      #loop: "{{ vm_name }}"
       delegate_to: localhost
       register: facts
 
