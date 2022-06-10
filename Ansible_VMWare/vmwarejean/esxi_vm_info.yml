@@ -15,7 +15,7 @@
         name: "{{ vm_name }}"
         schema: "vsphere"
         validate_certs: False
-        properties: ["config.hardware.memoryMB", "guest.disk", "overallStatus"]
+        #properties: ["config.hardware.memoryMB", "guest.disk", "overallStatus"]
       delegate_to: localhost
       register: info
     - debug:
