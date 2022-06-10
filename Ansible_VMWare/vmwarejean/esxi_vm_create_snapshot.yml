@@ -19,10 +19,10 @@
     - name: " Gather information from datacenter about specific datastore "
       vmware_datastore_info:
         hostname: "{{ vcenter_hostname }}"
-        username: "{{ vcenter_user }}"
-        password: "{{ vcenter_pass }}"
+        username: "{{ vcenter_username }}"
+        password: "{{ vcenter_password }}"
         validate_certs: false
-        datacenter: "{{ datacenter_name }}"
+        datacenter: "{{ datacenter }}"
         name: "{{ item.value.backing_datastore }}"
       with_dict: "{{ existing_disk.guest_disk_info }}"
       register: ds_info
