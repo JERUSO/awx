@@ -17,7 +17,7 @@
       when: inventory_hostname in groups["Linux"]
       register: output_RH
       #timeout: 60
-      #ignore_errors: yes
+      ignore_errors: yes
 
     - name: Recover Files and rename AIX
       fetch:
@@ -30,7 +30,7 @@
       when: inventory_hostname in groups["AIX"]
       register: output_AIX
       #timeout: 60
-      #ignore_errors: yes
+      ignore_errors: yes
 
     - name: Recover Files and rename AIX
       fetch:
@@ -42,4 +42,4 @@
       when: inventory_hostname in groups["AIX"]
       register: output_AIX
       #timeout: 60
-      #ignore_errors: yes
+      ignore_errors: yes
