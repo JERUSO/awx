@@ -5,3 +5,4 @@
   tasks:
     - name: ping
       ping:
+      when: inventory_hostname in groups["Linux"]
