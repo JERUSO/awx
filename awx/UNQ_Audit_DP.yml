@@ -1,0 +1,43 @@
+  become_user: root
+  vars:
+    - dest_path: "/pcv_audit_tmp/results/"
+
+  tasks:
+
+    - name: Recover Files and rename RH
+      fetch:
+        src: "{{ item }}"
+        dest: "{{ dest_path }}{{ inventory_hostname }}.{{ item.split('/')[-1] }}"
+        flat: yes
+      loop:
+        - /etc/passwd
+        - /etc/shadow
+      when: inventory_hostname in groups["Linux"]
+      register: output_RH
+      timeout: 60
+      ignore_errors: yes
+
+    - name: Recover Files and rename AIX
+      fetch:
+        src: "{{ item }}"
+        dest: "{{ dest_path }}{{ inventory_hostname }}.{{ item.split('/')[-1] }}"
+        flat: yes
+      loop:
+        - /etc/passwd
+        - /etc/security/user
+      when: inventory_hostname in groups["AIX"]
+      register: output_AIX
+      timeout: 60
+      ignore_errors: yes
+
+    - name: Recover Files and rename AIX
+      fetch:
+        src: "{{ item }}"
+        dest: "{{ dest_path }}{{ inventory_hostname }}.shadow"
+        flat: yes
+      loop:
+        - /etc/security/passwd
+      when: inventory_hostname in groups["AIX"]
+      register: output_AIX
+      timeout: 60
+      ignore_errors: yes
