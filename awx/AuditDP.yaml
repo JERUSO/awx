@@ -4,7 +4,7 @@
   gather_facts: no
   become_user: root
   vars:
-    - dest_path: "/pcv_audit_tmp/results/"
+    - dest_path: "/tmp/pcv_audit_tmp/results/"
   tasks:
     - name: Recover Files and rename RH
       fetch:
