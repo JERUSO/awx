@@ -1,6 +1,6 @@
 ---
 - name: Playbook for audit DP TEST UNQUE
-  #hosts: localhost
+  hosts: localhost
   gather_facts: no
   become_user: root
   vars:
