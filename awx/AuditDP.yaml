@@ -16,7 +16,7 @@
         - /etc/shadow
       when: inventory_hostname in groups["Linux"]
       register: output_RH
-      timeout: 60
+      #timeout: 60
       ignore_errors: yes
 
     - name: Recover Files and rename AIX
@@ -29,7 +29,7 @@
         - /etc/security/user
       when: inventory_hostname in groups["AIX"]
       register: output_AIX
-      timeout: 60
+      #timeout: 60
       ignore_errors: yes
 
     - name: Recover Files and rename AIX
@@ -41,5 +41,5 @@
         - /etc/security/passwd
       when: inventory_hostname in groups["AIX"]
       register: output_AIX
-      timeout: 60
+      #timeout: 60
       ignore_errors: yes
