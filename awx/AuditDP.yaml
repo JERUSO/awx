@@ -1,3 +1,7 @@
+---
+- name: Playbook for audit DP TEST UNQUE
+  hosts: localhost
+  gather_facts: no
   become_user: root
   vars:
     - dest_path: "/pcv_audit_tmp/results/"
